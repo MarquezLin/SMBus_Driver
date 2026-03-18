@@ -1,4 +1,5 @@
 #include "public.h"
+#include <wdmsec.h>
 
 NTSTATUS
 McuSmbusDrvEvtDeviceAdd(
@@ -21,6 +22,13 @@ McuSmbusDrvEvtDeviceAdd(
     if (!NT_SUCCESS(status))
     {
         KdPrint(("McuSmbusDrv: WdfDeviceInitAssignName failed = 0x%08X\n", status));
+        return status;
+    }
+
+    status = WdfDeviceInitAssignSDDLString(DeviceInit, &SDDL_DEVOBJ_SYS_ALL_ADM_ALL);
+    if (!NT_SUCCESS(status))
+    {
+        KdPrint(("McuSmbusDrv: WdfDeviceInitAssignSDDLString failed = 0x%08X\n", status));
         return status;
     }
 
@@ -48,7 +56,6 @@ McuSmbusDrvEvtDeviceAdd(
         WDF_NO_OBJECT_ATTRIBUTES,
         WDF_NO_HANDLE
     );
-
     if (!NT_SUCCESS(status))
     {
         KdPrint(("McuSmbusDrv: WdfIoQueueCreate failed = 0x%08X\n", status));
